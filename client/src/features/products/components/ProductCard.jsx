@@ -7,7 +7,8 @@ import { MyStore } from '../../../context/AppContext';
 
 export const ProductCard = ({ product }) => {
   const API = useAPI();
-  const { setProducts, products } = useContext(MyStore);
+  const { user, setProducts, products } = useContext(MyStore);
+  const isOwner = user && (user.userId === product.user || user.id === product.user);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
@@ -38,14 +39,16 @@ export const ProductCard = ({ product }) => {
         
         <div className="flex items-center justify-between">
           <span className="text-xl font-bold text-slate-900">₹{product.price}</span>
-          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Link to={`/products/update/${product._id}`}>
-              <Button size="sm" variant="secondary">Edit</Button>
-            </Link>
-            <Button size="sm" className="bg-red-500 hover:bg-red-600" onClick={handleDelete}>
-              Delete
-            </Button>
-          </div>
+          {isOwner && (
+            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Link to={`/products/update/${product._id}`}>
+                <Button size="sm" variant="secondary">Edit</Button>
+              </Link>
+              <Button size="sm" className="bg-red-500 hover:bg-red-600" onClick={handleDelete}>
+                Delete
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

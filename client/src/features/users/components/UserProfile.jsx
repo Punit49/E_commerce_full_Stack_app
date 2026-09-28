@@ -30,7 +30,6 @@ export const UserProfile = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Column - Navigation */}
         <div className="col-span-1 space-y-2">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-2">
             {[
@@ -52,7 +51,6 @@ export const UserProfile = () => {
           </div>
         </div>
 
-        {/* Right Column - Form */}
         <div className="col-span-1 md:col-span-2">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
             <h2 className="text-xl font-bold text-slate-900 mb-6">Personal Information</h2>

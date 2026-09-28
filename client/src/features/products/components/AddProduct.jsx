@@ -3,6 +3,7 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { useNavigate, useParams } from 'react-router';
 import useAPI from '../../../hooks/useApi';
+import toast from 'react-hot-toast';
 
 export const AddProduct = () => {
   const navigate = useNavigate();
@@ -17,25 +18,17 @@ export const AddProduct = () => {
 
   useEffect(() => {
     if (id) {
-      const fetchProduct = async () => {
-        try {
-          const res = await API.get(`/products/${id}`);
+      API.get(`/products/${id}`)
+        .then(res => {
           const prod = res.data.data.product;
           setTitle(prod.title);
           setPrice(prod.price);
           setStock(prod.stock);
           setDescription(prod.description);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchProduct();
+        })
+        .catch(() => {});
     }
   }, [id]);
-
-  const handleCancel = () => {
-    navigate("/");
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,20 +36,23 @@ export const AddProduct = () => {
       if (id) {
         await API.put(`/products/${id}`, { title, price, stock, description });
       } else {
+        if (!image) {
+          toast.error("Please select an image");
+          return;
+        }
         const formData = new FormData();
         formData.append('title', title);
         formData.append('price', price);
         formData.append('stock', stock);
         formData.append('description', description);
-        if (image) formData.append('image', image);
-
+        formData.append('image', image);
         await API.post('/products', formData);
       }
       navigate("/");
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -84,6 +80,7 @@ export const AddProduct = () => {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 min={0}
+                step="0.01"
                 required
               />
               <Input 
@@ -120,9 +117,9 @@ export const AddProduct = () => {
                   <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <div className="mt-4 flex justify-center text-sm text-slate-600">
-                  <span className="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
-                    <span>Upload a file</span>
-                    <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => setImage(e.target.files[0])} />
+                  <span className="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 hover:text-primary-500">
+                    <span>{image ? image.name : 'Upload a file'}</span>
+                    <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => setImage(e.target.files[0])} />
                   </span>
                   <p className="pl-1">or drag and drop</p>
                 </div>
@@ -132,7 +129,7 @@ export const AddProduct = () => {
           )}
           
           <div className="pt-6 flex justify-end gap-3 border-t">
-            <Button onClick={handleCancel} variant="secondary">Cancel</Button>
+            <Button type="button" onClick={() => navigate("/")} variant="secondary">Cancel</Button>
             <Button type="submit">Save Product</Button>
           </div>
         </form>
