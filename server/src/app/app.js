@@ -6,7 +6,7 @@ import productRouter from "../routes/product.routes.js";
 const app = express();
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: true,
     credentials: true,
 }));
 
