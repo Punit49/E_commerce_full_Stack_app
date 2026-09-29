@@ -3,11 +3,13 @@ import { useContext } from "react";
 import { MyStore } from "../context/AppContext";
 import toast from "react-hot-toast";
 
+const baseURL = import.meta.env.VITE_API_URL || "/api";
+
 const useAPI = () => {
     const { accessToken, setAccessToken } = useContext(MyStore);
     
     const API = axios.create({
-        baseURL: "/api",
+        baseURL: baseURL,
         withCredentials: true
     }); 
 
@@ -31,7 +33,7 @@ const useAPI = () => {
             if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
                 originalRequest._retry = true;
                 try {
-                    const res = await axios.post("/api/auth/refresh-token", {}, { withCredentials: true });
+                    const res = await axios.post(`${baseURL}/auth/refresh-token`, {}, { withCredentials: true });
                     const newAccessToken = res.data.accessToken;
                     setAccessToken(newAccessToken);
                     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
