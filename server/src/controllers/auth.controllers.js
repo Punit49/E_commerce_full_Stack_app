@@ -58,7 +58,7 @@ const loginController = async (req, res) => {
         }
 
         const { accessToken, refreshToken } = generateTokens(user._id, user.role);
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none" });
         await UserModel.findOneAndUpdate({ email }, { $set: { refreshToken } });
 
         return res.status(200).json({
@@ -90,7 +90,7 @@ const logoutController = async (req, res) => {
             }
         });
 
-        res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none" });
 
         return res.status(200).json({
             success: true, 
@@ -143,7 +143,7 @@ const refreshTokenController = async (req, res) => {
 
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user._id, user.role);
         await UserModel.findByIdAndUpdate(user._id, {refreshToken: newRefreshToken});
-        res.cookie("refreshToken", newRefreshToken, { httpOnly: true, secure: true });
+        res.cookie("refreshToken", newRefreshToken, { httpOnly: true, secure: true, sameSite: "none" });
 
         res.status(200).json({
             success: true, 
